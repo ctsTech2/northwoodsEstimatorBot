@@ -53,19 +53,6 @@ def store_thread(cust_id, thread_id):
     with shelve.open("threads_db", writeback=True) as threads_shelf:
         threads_shelf[cust_id] = thread_id
 
-# def generate_response(message_body):
-#     thread = client.beta.threads.create()
-#     thread_id = thread.id
-
-#     message = client.beta.threads.messages.create(
-#         thread_id=thread_id,
-#         role="user",
-#         content=message_body,
-#     )
-    
-#     message_body = "I'd like to get a quote for a 12x12 deck."
-
-
 
 # --------------------------------------------------------------
 # Generate response
@@ -75,34 +62,34 @@ def generate_response(message_body, cust_id, name):
     thread_id = check_if_thread_exists(cust_id)
 
     # If a thread doesn't exist, create one and store it
-    # if thread_id is None:
-    #     print(f"Creating new thread for {name} with cust_id {cust_id}")
-    #     thread = client.beta.threads.create()
-    #     store_thread(cust_id, thread.id)
-    #     thread_id = thread.id
+    if thread_id is None:
+        print(f"Creating new thread for {name} with cust_id {cust_id}")
+        thread = client.beta.threads.create()
+        store_thread(cust_id, thread.id)
+        thread_id = thread.id
 
     # # Otherwise, retrieve the existing thread
-    # else:
-    #     print(f"Retrieving existing thread for {name} with cust_id {cust_id}")
-    #     thread = client.beta.threads.retrieve(thread_id)
+    else:
+        print(f"Retrieving existing thread for {name} with cust_id {cust_id}")
+        thread = client.beta.threads.retrieve(thread_id)
 
     # # Add message to thread
-    # message = client.beta.threads.messages.create(
-    #     thread_id=thread_id,
-    #     role="user",
-    #     content=message_body,
-    # )
+    message = client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=message_body,
+    )
 
     # # Run the assistant and get the new message
-    # new_message = run_assistant(thread)
-    # print(f"To {name}:", new_message)
-    # return new_message
+    new_message = run_assistant(thread)
+    print(f"To {name}:", new_message)
+    return new_message
 
 
 # # --------------------------------------------------------------
 # # Run assistant
 # # --------------------------------------------------------------
-def run_assistant():
+def run_assistant(thread):
     # Retrieve the Assistant
     assistant = client.beta.assistants.retrieve("asst_bBnWdU3NCVf7lhZU27m1gwp1")
     thread = client.beta.threads.retrieve("thread_ofejyOhWqHPM5aIeCYlSmo0p")
@@ -131,9 +118,9 @@ def run_assistant():
 # # Test assistant
 # # --------------------------------------------------------------
 
-# new_message = generate_response("What's the check in time?", "123", "John")
+new_message = generate_response("I'd like to get a quote for my 12x12 deck.", "123", "John")
 
-# new_message = generate_response("What's the pin for the lockbox?", "456", "Sarah")
+new_message = generate_response("I'd like to get a quote for building a garage.", "456", "Sarah")
 
 # new_message = generate_response("What was my previous question?", "123", "John")
 

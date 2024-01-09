@@ -26,6 +26,7 @@ venv.bak/
 *.swo
 *.swn
 *.bak
+*.code-workspace
 
 # dotenv
 .env
